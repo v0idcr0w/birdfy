@@ -1,6 +1,29 @@
 import pathlib, os 
-from torch.utils.data import DataLoader
+from PIL import Image
+from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms 
+
+# custom dataset to load images
+
+class BirdsDataset(Dataset): 
+    def __init__(self, root: str, transform = None): 
+        self.paths = list(pathlib.Path(root).glob("*/*"))  # paths to all imgs in target_dir
+        self.classes = os.listdir(root) # list of class names (species)
+        self.class_to_idx = {class_name:index for (index, class_name) in enumerate(self.classes)} 
+        self.idx_to_class = {index:class_name for (index, class_name) in enumerate(self.classes)} # inverse of class_to_idx
+        self.transform = transform 
+    def __len__(self): 
+        return len(self.paths) 
+    def __getitem__(self, index: int):
+        image_path = self.paths[index] # type PosixPath, or WindowsPath etc 
+        image_pil = Image.open(image_path)
+        image_class_idx = self.class_to_idx[image_path.parent.name]  
+        if self.transform is not None: 
+            image_tensor = self.transform(image_pil)
+        else: 
+            to_tensor = torchvision.transforms.ToTensor()
+            image_tensor = to_tensor(image_pil)
+        return image_tensor, image_class_idx 
 
 def fetch_data(batch_size: int, image_size: int, is_reduced: bool = True, num_workers: int = os.cpu_count()): 
     """
@@ -11,9 +34,9 @@ def fetch_data(batch_size: int, image_size: int, is_reduced: bool = True, num_wo
         num_workers (int, optional): choose the number of CPU cores. Defaults to the result yielded by os.cpu_count().
     """    
     # img path
-    image_path = pathlib.Path("data/" + "reduced" if is_reduced else "full")
-    train_path = image_path / "train"
-    test_path = image_path / "test"
+    image_path = "data/" + "reduced" if is_reduced else "full"
+    train_path = image_path + "/train"
+    test_path = image_path + "/test"
 
     # transformation pipeline 
     data_transform = transforms.Compose([
@@ -22,15 +45,10 @@ def fetch_data(batch_size: int, image_size: int, is_reduced: bool = True, num_wo
         transforms.ToTensor(), 
     ]) 
 
-    train_data = datasets.ImageFolder(root=train_path, transform=data_transform, target_transform=None)
-    test_data = datasets.ImageFolder(root=test_path, transform=data_transform) 
+    train_data = BirdsDataset(root=train_path, transform=data_transform)
+    test_data = BirdsDataset(root=test_path, transform=data_transform) 
 
     train_loader = DataLoader(dataset=train_data, batch_size=batch_size, num_workers=num_workers, shuffle=True) 
     test_loader = DataLoader(dataset=test_data, batch_size=batch_size, num_workers=num_workers, shuffle=False)
     
     return train_data, test_data, train_loader, test_loader
-
-
-def idx_to_class(data): 
-    """Returns the inverse of class_to_idx dictionary"""
-    return {value:key for key, value in data.class_to_idx.items()} 
