@@ -21,7 +21,7 @@ class BirdsDataset(Dataset):
         if self.transform is not None: 
             image_tensor = self.transform(image_pil)
         else: 
-            to_tensor = torchvision.transforms.ToTensor()
+            to_tensor = transforms.ToTensor()
             image_tensor = to_tensor(image_pil)
         return image_tensor, image_class_idx 
 

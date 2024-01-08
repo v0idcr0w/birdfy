@@ -67,7 +67,7 @@ def train(model, train_dataloader, test_dataloader, epochs, loss_fn, optimizer, 
         
         # progress
         print(f"***** EPOCH {epoch} *****")
-        print(f"LOSS: TRAIN = {train_loss:.3f} | TEST = {test_loss:.3f}")
+        print(f"LOSS:     TRAIN = {train_loss:.3f} | TEST = {test_loss:.3f}")
         print(f"ACCURACY: TRAIN = {train_acc:.3f} | TEST = {test_acc:.3f}")
         
         # add to results 
