@@ -26,8 +26,6 @@ def save_results(model_name, results):
     """ 
     model_name|epoch_number|train_loss|test_loss|train_acc|test_acc
     """
-            
-         
 
 def load_model(model, model_name: str): 
     model_path = pathlib.Path("models")

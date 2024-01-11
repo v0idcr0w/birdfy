@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Birdify - Bird ID</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <h1>Birdify - Image Classification Model</h1>
+    <h3>Upload an image of a bird</h3>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <input name="file" type="file" />
+        <button>Upload</button>
+    </form>
+
+    {% if error_message %}
+    <div>
+      <h3 style="color: red">{{ error_message }}</h3>
+    </div>
+    {% endif %}
+
+    {% if submitted_image %}
+    <div>
+      <img src="data:image/png;base64,{{ submitted_image }}" alt="Submitted Image">
+    </div>
+    {% endif %}
+
+    {% if prediction %}
+    <div>
+      <h3>Prediction Results</h3>
+      <p>Bird Species: {{ prediction }}</p>
+      <p>Probabilities:</p>
+      <ul>
+      {% for species, prob in probs.items() %}
+      <li>{{ species }}: {{ prob }}%</li>
+      {% endfor %}
+    </ul>
+    </div>
+    {% endif %}
+  </body>
+</html>
