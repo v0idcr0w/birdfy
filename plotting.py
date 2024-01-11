@@ -64,4 +64,12 @@ def plot_random_image(path: str):
     ax.set_box_aspect(1)
     
     return fig, ax
-    
+
+
+def plot_prediction(custom_image, probabilities, prediction):
+    fig, ax = plt.subplots()
+    ax.imshow(custom_image.to("cpu").permute(1,2,0)) 
+    ax.axis("off") 
+    ax.set_title(f"{prediction} | {probabilities.max() * 100:.2f}%")
+
+    return fig, ax 

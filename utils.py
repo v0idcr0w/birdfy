@@ -1,6 +1,6 @@
 """This module contains functionality for loading/saving models"""
 import pathlib, os 
-import torch 
+import torch, torchvision
 import pandas as pd
 
 
@@ -40,6 +40,14 @@ def load_results(model_name: str | None = None):
     else: 
         return all_results[ all_results['model_name'] == model_name ]
 
+
+def load_custom_image(validation_image_name: str, image_size: int = 224):
+    image_path = f"data/reduced/validation/{validation_image_name}.jpg"
+    custom_image = torchvision.io.read_image(image_path).type(torch.float32) / 255
+    resizer = torchvision.transforms.Resize(size=(image_size, image_size), antialias=True) 
+    return resizer(custom_image)
+    
+    
 
 if __name__ == "__main__":
     results = {"train_loss": [1.096, 0.688, 0.469, 0.301], 

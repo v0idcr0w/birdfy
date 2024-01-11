@@ -78,8 +78,10 @@ def train(model, train_dataloader, test_dataloader, epochs, loss_fn, optimizer, 
         
     return results 
 
-def predict(model, image_tensor, transform, labels_dict, device="cpu"): 
-    custom_image = transform(image_tensor).unsqueeze(dim=0) # add another dimension that corresponds to the batch size  
+def predict(model, image_tensor, labels_dict, transform=None, device="cpu"): 
+    if transform is not None:
+        image_tensor = transform(image_tensor) 
+    custom_image = image_tensor.unsqueeze(dim=0) # add another dimension that corresponds to the batch size  
     
     model.eval() 
     with torch.inference_mode():
